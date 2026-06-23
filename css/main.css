@@ -448,11 +448,15 @@ flex: 1 !important;
 .contact {
   position: relative;
   text-align: center;
-  padding: 150px 20px;
-  margin-top: 40px;
+  padding: 100px 20px;
+  margin: 40px auto;
+  
   color: white;
   overflow: hidden;
   border-radius: 10px;
+
+  width: 100%;
+  max-width: 950px;
 }
 
 .contact::before {
