@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>중고차 렌트 - 실시간 차량 대여</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<header>쉐어카 테스트</header>
+
+<main>
+  <!-- <section class="hero">
+    <img src="/image/car_kakao-001.png" alt="메인 배너 이미지" class="hero-banner" />
+  </section> -->
+  <div class="banner-container">
+    <img src="image/car_kakao-001.png" class="banner-img active">
+    <img src="image/car_kakao-002.png" class="banner-img">
+    <img src="image/car_kakao-003.png" class="banner-img">
+</div>
+
+  <!-- <section class="hero-text-wrapper">
+    <h1>빠르고 간편한 렌트카 예약 서비스</h1>
+    <p>원하는 차량을 쉽고 빠르게! 실시간 차량 목록을 확인하고 예약하세요.</p>
+    <button class="btn-primary" onclick="document.getElementById('contact-section').scrollIntoView({behavior:'smooth'})">
+      오픈카톡 상담하기
+    </button>
+  </section> -->
+
+  <section class="car_list1">
+    <h2>차량 목록</h2>
+    <div id="car-list" class="car-list-slider">로딩 중...</div>
+  </section>
+
+  <section class="contact" id="contact-section">
+    <h2>상세 문구가 들어갈 공간입니다. <br>현재 미정</h2>
+    <a id="open-kakao-link" href="https://open.kakao.com/o/your-opentalk-link" target="_blank" class="btn-primary">
+      오픈카톡 상담하기
+    </a>
+  </section>
+
+  <section class="video-section">
+  <div id="media-container" style="position: relative; width: 100%; height: 100%; overflow: hidden;">
+    <div id="media-layer-1" class="media-layer" style="position: absolute; width: 100%; height: 100%; transition: opacity 0.8s ease-in-out;"></div>
+    <div id="media-layer-2" class="media-layer" style="position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 0.8s ease-in-out;"></div>
+  </div>
+  
+  <div class="video-controls">
+    <button class="video-btn" onclick="switchMedia('image/video1.mp4', 'video')">영상 1</button>
+    <button class="video-btn" onclick="switchMedia('image/video2.mp4', 'video')">영상 2</button>
+    <button class="video-btn" onclick="switchMedia('image/video3.mp4', 'video')">영상 3</button>
+    <button class="video-btn" onclick="switchMedia('image/video2.mp4', 'video')">영상 4</button>
+  </div>
+</section>
+
+<section class="event-section">
+  <h2 class="event-title">이벤트 배너</h2>
+  <div class="event-banners">
+    <div class="banner-item"><img src="image/banner1.jpg" alt="이벤트1"></div>
+    <div class="banner-item"><img src="image/banner2.jpg" alt="이벤트2"></div>
+    <div class="banner-item"><img src="image/banner3.png" alt="이벤트3"></div>
+    <div class="banner-item"><img src="image/banner4.png" alt="이벤트4"></div>
+  </div>
+</section>
+
+
+  <section>
+    <h2>쉐어카 진행 절차</h2>
+    <div class="process">
+      <div class="step"><h3>1. 차량 선택</h3><p>차량 목록에서 원하는 차량을 고릅니다.</p></div>
+      <div class="step"><h3>2. 상담 문의</h3><p>전화 또는 오픈카톡을 통해 상담을 진행합니다.</p></div>
+      <div class="step"><h3>3. 계약 및 결제</h3><p>계약서 작성 후 결제를 진행합니다.</p></div>
+      <div class="step"><h3>4. 차량 인수</h3><p>예약일에 맞춰 차량을 인수합니다.</p></div>
+    </div>
+  </section>
+
+
+</main>
+
+<div id="car-modal" class="car-modal">
+  <span class="car-modal-close" onclick="document.getElementById('car-modal').classList.remove('show')">&times;</span>
+  <div class="car-modal-content">
+    <img id="modal-img" class="car-modal-img" src="" alt="차량 이미지">
+    <div class="car-modal-body">
+      <div id="modal-title" class="car-modal-title" style="font-size: 1.5em; font-weight: 900; border-bottom: 2px solid #ff7b00; padding-bottom: 10px; margin-bottom: 20px;"></div>
+      
+      <div class="info-row" id="modal-type"></div>
+      <div class="info-row" id="modal-year"></div>
+      <div class="info-row" id="modal-color"></div>
+      <div class="info-row" id="modal-fuel"></div>
+      <div class="info-row" id="modal-mileage"></div>
+      <div class="info-row" id="modal-price" style="color: #d9534f; font-weight: bold;"></div>
+      
+      <div class="modal-buttons">
+  <a href="#contact-section" class="car-modal-btn" onclick="document.getElementById('car-modal').classList.remove('show')">상담문의</a>
+  <a href="javascript:void(0)" class="car-modal-close-btn" onclick="document.getElementById('car-modal').classList.remove('show')">닫기</a>
+</div>
+  </div>
+</div>
+<!-- ------------------------------------------------------------------------------- -->
+
+<footer>
+  @&copy; 렌트카 테스트
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+  const images = document.querySelectorAll('.banner-img');
+let currentIndex = 0;
+
+function changeBanner() {
+    images[currentIndex].classList.remove('active');
+    
+    currentIndex = (currentIndex + 1) % images.length;
+    
+    images[currentIndex].classList.add('active');
+}
+
+// 3초마다 이미지 전환
+setInterval(changeBanner, 4000);
+
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRou7lOLzRsClUxJ22uKZgtxxtiZTUrIvgvrNTkTMQYkR5DwAOET-UYsusXd-C_alVh7vHsOwrqWLEW/pub?output=csv';
+
+let cars = [];
+const MAX_CARS_DISPLAY = 10;
+
+function convertDriveUrl(url) {
+  if (!url) return '';
+  const regex = /\/d\/([a-zA-Z0-9_-]{25,})/;
+  const match = url.match(regex);
+  if (match && match[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  }
+  return url;
+}
+
+async function loadCarList() {
+  const container = document.getElementById('car-list');
+
+  try {
+    const response = await fetch(CSV_URL);
+    const csvText = await response.text();
+    const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+
+    cars = results.data;
+    container.innerHTML = '';
+
+    appendCarsSlider();
+    if (cars.length) startAutoSlide();
+
+  } catch (err) {
+    container.innerHTML = '데이터를 불러올 수 없습니다.';
+  }
+}
+
+function appendCarsSlider() {
+  const container = document.getElementById('car-list');
+  const carsToShow = cars.slice(0, MAX_CARS_DISPLAY);
+
+  carsToShow.forEach(car => {
+    const imgSrc = convertDriveUrl(car.imageurl);
+
+    const carElem = document.createElement('div');
+    carElem.className = 'car-item';
+
+    carElem.innerHTML = `
+      <img class="car-img" src="${imgSrc}" alt="${car.model}">
+      <div class="car-name">${car.model || '-'}</div>
+      <div class="car-info">차종 : ${car.type || '-'}</div>
+      <div class="car-info">연식 : ${car.year || '-'}</div>
+      <div class="car-info">색상 : ${car.color || '-'}</div>
+      <div class="car-info">유종 : ${car.fuel || '-'}</div>
+      <div class="car-info">주행거리 : ${car.mileage || '-'}</div>
+      <div class="car-info">가격  : ${car.price || '-'}</div>
+    `;
+
+    carElem.addEventListener('click', () => {
+      document.getElementById('modal-img').src = imgSrc;
+      document.getElementById('modal-title').textContent = car.model || '-';
+      document.getElementById('modal-type').textContent = `차종 : ${car.type || '-'}`;
+      document.getElementById('modal-year').textContent = `연식 : ${car.year || '-'}`;
+      document.getElementById('modal-color').textContent = `색상 : ${car.color || '-'}`;
+      document.getElementById('modal-fuel').textContent = `유종 : ${car.fuel || '-'}`;
+      document.getElementById('modal-mileage').textContent = `주행거리 : ${car.mileage || '-'}`;
+      document.getElementById('modal-price').textContent = `가격 : ${car.price || '-'}`;
+      document.getElementById('car-modal').classList.add('show');
+    });
+
+    container.appendChild(carElem);
+  });
+}
+
+function startAutoSlide() {
+  const container = document.getElementById('car-list');
+  const first = container.querySelector('.car-item');
+  if (!first) return;
+
+  let scrollPos = 0;
+  const slideWidth = first.offsetWidth + 16;
+
+  setInterval(() => {
+    scrollPos += slideWidth;
+    if (scrollPos > container.scrollWidth - container.clientWidth) scrollPos = 0;
+    container.scrollTo({ left: scrollPos, behavior: 'smooth' });
+  }, 5000);
+}
+// 미디어 변경 함수
+function changeMedia(src) {
+  const media = document.getElementById('main-media');
+  media.src = src;
+}
+// function switchMedia(src, type) {
+// const container = document.getElementById('media-container');
+
+//   // 1. 먼저 투명도를 0으로 만들어 서서히 사라지게 함
+//   container.classList.add('fade-out');
+
+//   // 2. 사라지는 애니메이션이 끝날 때까지 대기(0.6초) 후 소스 교체
+//   setTimeout(() => {
+//     if (type === 'video') {
+//       container.innerHTML = `
+//         <video autoplay muted loop style="width:100%; height:100%; object-fit:cover;">
+//           <source src="${src}" type="video/mp4">
+//         </video>`;
+//     } else {
+//       container.innerHTML = `
+//         <img src="${src}" style="width:100%; height:100%; object-fit:cover;">`;
+//     }
+
+//     // 3. 다시 투명도를 1로 만들어 서서히 나타나게 함
+//     container.classList.remove('fade-out');
+//   }, 500); // CSS의 transition 시간과 맞춤 (0.6초)
+// }
+
+
+// document.addEventListener('click', (e) => {
+//   const modal = document.getElementById('car-modal');
+
+//   if (e.target.classList.contains('car-modal-close') || e.target === modal) {
+//     modal.classList.remove('show');
+//   }
+// });
+
+// 페이지 로드 시 첫 번째 영상 자동 세팅
+  window.addEventListener('DOMContentLoaded', () => {
+    const layer1 = document.getElementById('media-layer-1');
+    
+    // 1번 영상 주입 (영상 경로를 실제 파일명으로 확인하세요)
+    layer1.innerHTML = `
+      <video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;">
+        <source src="image/video1.mp4" type="video/mp4">
+      </video>`;
+    
+    // 첫 화면이므로 투명도를 1로 설정
+    layer1.style.opacity = 1;
+  });
+
+let currentLayer = 1;
+
+function switchMedia(src, type) {
+  const layer1 = document.getElementById('media-layer-1');
+  const layer2 = document.getElementById('media-layer-2');
+  
+  const nextLayer = currentLayer === 1 ? layer2 : layer1;
+  const activeLayer = currentLayer === 1 ? layer1 : layer2;
+
+  // 다음 레이어에 콘텐츠 삽입
+  if (type === 'video') {
+    nextLayer.innerHTML = `<video autoplay muted loop style="width:100%; height:100%; object-fit:cover;"><source src="${src}" type="video/mp4"></video>`;
+  } else {
+    nextLayer.innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit:cover;">`;
+  }
+
+  // 교차 전환 (Opacity 조절)
+  nextLayer.style.opacity = 1;
+  activeLayer.style.opacity = 0;
+
+  currentLayer = currentLayer === 1 ? 2 : 1;
+}
+loadCarList();
+</script>
+
+</body>
+</html>
